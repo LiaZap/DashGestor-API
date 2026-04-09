@@ -24,20 +24,25 @@ function extractGoogleOverrides(req: AuthRequest): GoogleOverrides | undefined {
 
 dashboardRouter.get('/overview', async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { period = '7d', platform = 'all' } = req.query;
+    const { period = '7d', platform = 'all', since, until } = req.query;
     const metaOv = extractMetaOverrides(req);
     const googleOv = extractGoogleOverrides(req);
+
+    // If custom date range is provided, pass it; otherwise use period
+    const customRange = since && until
+      ? { since: since as string, until: until as string }
+      : undefined;
 
     const results: { meta?: any; google?: any; metaCampaigns?: any; googleCampaigns?: any } = {};
 
     if (platform === 'all' || platform === 'meta') {
       try {
-        results.meta = await fetchMetaInsights(period as string, metaOv);
+        results.meta = await fetchMetaInsights(period as string, metaOv, customRange);
       } catch (e) {
         results.meta = { error: 'Meta Ads não configurado', details: (e as Error).message };
       }
       try {
-        results.metaCampaigns = await fetchMetaCampaigns(period as string, metaOv);
+        results.metaCampaigns = await fetchMetaCampaigns(period as string, metaOv, customRange);
       } catch (e) {
         results.metaCampaigns = { error: 'Meta Campaigns não disponível', details: (e as Error).message };
       }

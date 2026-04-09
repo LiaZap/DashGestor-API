@@ -40,9 +40,13 @@ async function metaFetch(endpoint: string, params: Record<string, string> = {}, 
   return res.json();
 }
 
-export async function fetchMetaInsights(period: string, overrides?: MetaOverrides) {
+export async function fetchMetaInsights(
+  period: string,
+  overrides?: MetaOverrides,
+  customRange?: { since: string; until: string }
+) {
   const accountId = getMetaAdAccountId(overrides);
-  const { since, until } = periodToDates(period);
+  const { since, until } = customRange || periodToDates(period);
 
   const data = await metaFetch(`${accountId}/insights`, {
     fields: 'spend,impressions,clicks,ctr,cpc,cpm,actions,action_values,reach,frequency',
@@ -53,9 +57,13 @@ export async function fetchMetaInsights(period: string, overrides?: MetaOverride
   return data;
 }
 
-export async function fetchMetaCampaigns(period: string, overrides?: MetaOverrides) {
+export async function fetchMetaCampaigns(
+  period: string,
+  overrides?: MetaOverrides,
+  customRange?: { since: string; until: string }
+) {
   const accountId = getMetaAdAccountId(overrides);
-  const { since, until } = periodToDates(period);
+  const { since, until } = customRange || periodToDates(period);
 
   const insightFields = 'spend,impressions,clicks,ctr,actions,action_values';
   const data = await metaFetch(`${accountId}/campaigns`, {
