@@ -57,9 +57,9 @@ export async function fetchMetaCampaigns(period: string, overrides?: MetaOverrid
   const accountId = getMetaAdAccountId(overrides);
   const { since, until } = periodToDates(period);
 
+  const insightFields = 'spend,impressions,clicks,ctr,actions,action_values';
   const data = await metaFetch(`${accountId}/campaigns`, {
-    fields: 'name,status,objective,daily_budget,lifetime_budget,insights{spend,impressions,clicks,ctr,actions,action_values}',
-    time_range: JSON.stringify({ since, until }),
+    fields: `name,status,objective,daily_budget,lifetime_budget,insights.time_range({"since":"${since}","until":"${until}"}){${insightFields}}`,
     limit: '100',
   }, overrides);
 
