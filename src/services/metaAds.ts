@@ -74,6 +74,14 @@ export async function fetchMetaCampaigns(
   return data;
 }
 
+export async function fetchMetaAccountInfo(overrides?: MetaOverrides) {
+  const accountId = getMetaAdAccountId(overrides);
+  const data = await metaFetch(accountId, {
+    fields: 'name,account_id,balance,amount_spent,spend_cap,currency,account_status',
+  }, overrides);
+  return data;
+}
+
 export async function fetchMetaAdsets(campaignId: string, overrides?: MetaOverrides) {
   const data = await metaFetch(`${campaignId}/adsets`, {
     fields: 'name,status,daily_budget,targeting,insights{spend,impressions,clicks,ctr,actions}',

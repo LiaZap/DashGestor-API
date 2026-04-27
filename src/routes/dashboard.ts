@@ -2,7 +2,7 @@ import { Router, Response } from 'express';
 import type { AuthRequest } from '../middleware/auth';
 import type { MetaOverrides } from '../services/metaAds';
 import type { GoogleOverrides } from '../services/googleAds';
-import { fetchMetaInsights, fetchMetaCampaigns } from '../services/metaAds';
+import { fetchMetaInsights, fetchMetaCampaigns, fetchMetaAccountInfo } from '../services/metaAds';
 import { fetchGoogleMetrics, fetchGoogleCampaigns } from '../services/googleAds';
 
 export const dashboardRouter = Router();
@@ -33,7 +33,7 @@ dashboardRouter.get('/overview', async (req: AuthRequest, res: Response): Promis
       ? { since: since as string, until: until as string }
       : undefined;
 
-    const results: { meta?: any; google?: any; metaCampaigns?: any; googleCampaigns?: any } = {};
+    const results: { meta?: any; google?: any; metaCampaigns?: any; googleCampaigns?: any; metaAccount?: any } = {};
 
     if (platform === 'all' || platform === 'meta') {
       try {
@@ -45,6 +45,11 @@ dashboardRouter.get('/overview', async (req: AuthRequest, res: Response): Promis
         results.metaCampaigns = await fetchMetaCampaigns(period as string, metaOv, customRange);
       } catch (e) {
         results.metaCampaigns = { error: 'Meta Campaigns não disponível', details: (e as Error).message };
+      }
+      try {
+        results.metaAccount = await fetchMetaAccountInfo(metaOv);
+      } catch (e) {
+        results.metaAccount = { error: 'Meta Account info não disponível', details: (e as Error).message };
       }
     }
 
