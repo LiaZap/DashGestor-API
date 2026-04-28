@@ -47,8 +47,11 @@ dashboardRouter.get('/overview', async (req: AuthRequest, res: Response): Promis
         results.metaCampaigns = { error: 'Meta Campaigns não disponível', details: (e as Error).message };
       }
       try {
+        console.log('[Dashboard] Fetching Meta Account info...');
         results.metaAccount = await fetchMetaAccountInfo(metaOv);
+        console.log('[Dashboard] Meta Account result:', JSON.stringify(results.metaAccount));
       } catch (e) {
+        console.error('[Dashboard] Meta Account error:', (e as Error).message);
         results.metaAccount = { error: 'Meta Account info não disponível', details: (e as Error).message };
       }
     }
