@@ -1,7 +1,7 @@
 import { Router, Response } from 'express';
 import type { AuthRequest } from '../middleware/auth';
 import type { MetaOverrides } from '../services/metaAds';
-import { fetchMetaInsights, fetchMetaCampaigns, fetchMetaAdsets, fetchMetaAds, fetchMetaDemographics } from '../services/metaAds';
+import { fetchMetaInsights, fetchMetaCampaigns, fetchMetaAdsets, fetchMetaAds, fetchMetaDemographics, fetchMetaAccountInfo } from '../services/metaAds';
 
 export const metaRouter = Router();
 
@@ -44,6 +44,15 @@ metaRouter.get('/adsets/:campaignId', async (req: AuthRequest, res: Response): P
 metaRouter.get('/ads/:adsetId', async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const data = await fetchMetaAds(req.params.adsetId as string, extractMetaOverrides(req));
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+});
+
+metaRouter.get('/account', async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const data = await fetchMetaAccountInfo(extractMetaOverrides(req));
     res.json(data);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
